@@ -1,6 +1,8 @@
 # react-native-intent-launcher
 call native function `startActivity` in react-native
 
+Support Android 7 FileProvider
+
 ## Description
 You can call native function `startActivity` in react-native to do something with `Intent` which can only be solved with android native code
 
