@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <cache-path name="intent_name" path="." />
+    <files-path name="intent_files" path="." />
+    <external-files-path name="intent_external_files" path="." />
+    <external-path name="intent_external" path="." />
+    <external-cache-path name="intent_external_cached" path="." />
+</paths>
