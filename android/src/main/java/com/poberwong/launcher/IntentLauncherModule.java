@@ -87,7 +87,6 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
         if (params.hasKey(ATTR_FLAGS)) {
             intent.addFlags(params.getInt(ATTR_FLAGS));
         }
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         if (params.hasKey(ATTR_CATEGORY)) {
             intent.addCategory(params.getString(ATTR_CATEGORY));
         }

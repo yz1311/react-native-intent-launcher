@@ -25,11 +25,11 @@ you can view the code in [Example](https://github.com/Bob1993/react-native-inten
 * `action` String
 * `data` String
 * `category` String
-* `flags` String
+* `type` String
 * `extra` Object
 * `packageName` String
 * `className` String
-* `flags` Number
+* `flags` Number    (to set multi flgas,eg: flag1|flag2|flag2)
 
 In the `IntentConstant`, we provide some constants for these properties, you can look up document provided by google to find out property we didn't support currently.
 
