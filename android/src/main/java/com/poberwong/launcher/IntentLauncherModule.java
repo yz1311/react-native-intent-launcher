@@ -10,6 +10,7 @@ import android.util.Log;
 import com.facebook.react.bridge.*;
 
 import java.io.Console;
+import java.io.File;
 import java.util.Set;
 import java.util.Iterator;
 
@@ -27,6 +28,9 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
     private static final String ATTR_PACKAGE_NAME = "packageName";
     private static final String ATTR_CLASS_NAME = "className";
     Promise promise;
+    boolean hasError = false;
+    String errorMessage = "";
+
 
     public IntentLauncherModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -46,6 +50,8 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
     @ReactMethod
     public void startActivity(ReadableMap params, final Promise promise) {
         this.promise = promise;
+        this.errorMessage = "";
+        this.hasError = false;
         Intent intent = new Intent();
 
         if (params.hasKey(ATTR_CLASS_NAME)) {
@@ -60,11 +66,20 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
         if (params.hasKey(ATTR_ACTION)) {
             intent.setAction(params.getString(ATTR_ACTION));
         }
-        if (params.hasKey(ATTR_DATA)) {
-            intent.setData(Uri.parse(params.getString(ATTR_DATA)));
+        //must use setDataAndType
+        if(params.hasKey(ATTR_DATA)&&params.hasKey(ATTR_TYPE))
+        {
+            intent.setDataAndType(Uri.parse(params.getString(ATTR_DATA)),params.getString(ATTR_TYPE));
         }
-        if (params.hasKey(ATTR_TYPE)) {
-            intent.setType(params.getString(ATTR_TYPE));
+        else
+        {
+            //just set data or type,another will be set to null
+            if (params.hasKey(ATTR_TYPE)) {
+                intent.setType(params.getString(ATTR_TYPE));
+            }
+            if (params.hasKey(ATTR_DATA)) {
+                intent.setData(Uri.parse(params.getString(ATTR_DATA)));
+            }
         }
         if (params.hasKey(TAG_EXTRA)) {
             intent.putExtras(Arguments.toBundle(params.getMap(TAG_EXTRA)));
@@ -72,10 +87,21 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
         if (params.hasKey(ATTR_FLAGS)) {
             intent.addFlags(params.getInt(ATTR_FLAGS));
         }
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         if (params.hasKey(ATTR_CATEGORY)) {
             intent.addCategory(params.getString(ATTR_CATEGORY));
         }
-        getReactApplicationContext().startActivityForResult(intent, REQUEST_CODE, null); // 暂时使用当前应用的任务栈
+        try
+        {
+            getReactApplicationContext().startActivityForResult(intent, REQUEST_CODE, null); // 暂时使用当前应用的任务栈
+        }
+        catch(Exception e)
+        {
+            //不能直接reject，否则跟下面的方式会同时执行promise操作，会报错
+            this.hasError = true;
+            this.errorMessage = e.getMessage();
+//            this.promise.reject("-1", e.getMessage());
+        }
     }
 
     @Override
@@ -101,7 +127,13 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
                 params.putMap("extra", Arguments.fromBundle(extras));
             }
         }
-
-        this.promise.resolve(params);
+        if(this.hasError)
+        {
+            this.promise.reject("-1",this.errorMessage);
+        }
+        else
+        {
+            this.promise.resolve(params);
+        }
     }
 }
