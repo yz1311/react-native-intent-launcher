@@ -11,7 +11,7 @@ You can call native function `startActivity` in react-native to do something wit
 1. `npm install react-native-intent-launcher` 
 2. `react-native link react-native-intent-launcher`
 
-## Usage
+## Usage startActivity
 ```
 import IntentLauncher, { IntentConstant } from 'react-native-intent-launcher'
 ...
@@ -21,6 +21,7 @@ IntentLauncher.startActivity({
 })
 ...
 ```
+
 you can view the code in [Example](https://github.com/Bob1993/react-native-intent-launcher/blob/master/Example/index.android.js) of the Repository
 
 ## Properties
@@ -34,6 +35,14 @@ you can view the code in [Example](https://github.com/Bob1993/react-native-inten
 * `flags` Number    (to set multi flgas,eg: flag1|flag2|flag2)
 
 In the `IntentConstant`, we provide some constants for these properties, you can look up document provided by google to find out property we didn't support currently.
+
+## Usage finish
+
+to finish a exist activity
+
+## References
+[react-native-activity-result](https://github.com/rozele/react-native-activity-result)
+
 
 ## License
 *MIT*

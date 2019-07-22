@@ -135,4 +135,13 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
             this.promise.resolve(params);
         }
     }
+
+    @ReactMethod
+      public void finish(int result, String action, ReadableMap map) {
+          Activity activity = getReactApplicationContext().getCurrentActivity();
+          Intent intent = new Intent(action);
+          intent.putExtras(Arguments.toBundle(map));
+          activity.setResult(result, intent);
+          activity.finish();
+      }
 }

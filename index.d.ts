@@ -244,6 +244,7 @@ export type IntentConstant =  {
 declare const _default: {
   startActivity: (args:{action: string,category: string,flags?:number,data:string,type?:string,
     extra?:string,packageName?:string,className?:string})=>void,
+  finish: (resultCode:number, action: string, map: Object) => void
 }
 
 export const IntentConstant: IntentConstant;
