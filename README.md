@@ -39,6 +39,12 @@ In the `IntentConstant`, we provide some constants for these properties, you can
 ## Usage finish
 
 to finish a exist activity
+```
+import IntentLauncher, { IntentConstant } from 'react-native-intent-launcher'
+...
+IntentLauncher.finish(0,'',{});  //if no resultCode,just like this
+...
+```
 
 ## References
 [react-native-activity-result](https://github.com/rozele/react-native-activity-result)
