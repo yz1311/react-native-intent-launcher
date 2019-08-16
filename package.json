@@ -10,6 +10,9 @@
     "type": "git",
     "url": "git+https://github.com/yz1311/react-native-intent-launcher.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "poberwong",
   "license": "MIT",
   "bugs": {
