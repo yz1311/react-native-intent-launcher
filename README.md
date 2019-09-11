@@ -7,9 +7,15 @@ thanks poberwong's work[react-native-intent-launcher](https://github.com/poberwo
 ## Description
 You can call native function `startActivity` in react-native to do something with `Intent` which can only be solved with android native code
 
+## Compatibility
+| @yz1311/react-native-intent-launcher version | Required React Native Version |
+|----|-----|
+|`0.2.x`|`>=0.60` or `>=0.59` if using [Jetifier]|
+|`0.1.x`|`<=0.59`|
+
 ## Installation
 
-1. `npm install @yz1311/react-native-intent-launcher --save` 
+1. `npm install @yz1311/react-native-intent-launcher --save`   
 2. `react-native link react-native-intent-launcher`
 
 ## Usage startActivity
