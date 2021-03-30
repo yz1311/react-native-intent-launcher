@@ -1,3 +1,17 @@
+import ActivityUtils from '../src/ActivityUtils';
+import AppUtils from '../src/AppUtils';
+import BrightnessUtils from '../src/BrightnessUtils';
+import FlashlightUtils from '../src/FlashlightUtils';
+import KeyboardUtils from '../src/KeyboardUtils';
+import PathUtils from '../src/PathUtils';
+import RomUtils from '../src/RomUtils';
+import ScreenUtils from '../src/ScreenUtils';
+import ServiceUtils from '../src/ServiceUtils';
+import ShellUtils from '../src/ShellUtils';
+import VibrateUtils from '../src/VibrateUtils';
+import VolumeUtils from '../src/VolumeUtils';
+import ZipUtils from '../src/ZipUtils';
+
 export type IntentConstant =  {
   ATTR_ACTION: string,
   TAG_CATEGORIES: string,
@@ -240,6 +254,14 @@ export type IntentConstant =  {
   FILL_IN_CLIP_DATA: number,
 }
 
+export type appInfo = {
+  name: string;
+  packageName: string;
+  packagePath: string;
+  versionName: string;
+  versionCode: number;
+  isSystem: number;
+}
 
 declare const _default: {
   startActivity: (args:{action: string,category: string,flags?:number,data:string,type?:string,
@@ -248,5 +270,21 @@ declare const _default: {
 }
 
 export const IntentConstant: IntentConstant;
+
+export {
+  ActivityUtils,
+  AppUtils,
+  BrightnessUtils,
+  FlashlightUtils,
+  KeyboardUtils,
+  PathUtils,
+  RomUtils,
+  ScreenUtils,
+  ServiceUtils,
+  ShellUtils,
+  VibrateUtils,
+  VolumeUtils,
+  ZipUtils,
+}
 
 export default _default;

@@ -16,7 +16,24 @@ import java.util.List;
 public class IntentLauncherPackage implements ReactPackage{
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Arrays.<NativeModule>asList(new IntentLauncherModule(reactContext)); // 返回一个NativeModule范型的数组就ok
+        return Arrays.<NativeModule>asList(
+                new IntentLauncherModule(reactContext),
+                new ActivityUtilsModule(reactContext),
+                new ZipUtilsModule(reactContext),
+                new VolumeUtilsModule(reactContext),
+                new ShellUtilsModule(reactContext),
+                new ServiceUtilsModule(reactContext),
+                new RomUtilsModule(reactContext),
+                new ScreenUtilsModule(reactContext),
+                new ShellUtilsModule(reactContext),
+                new PathUtilsModule(reactContext),
+                new KeyboardUtilsModule(reactContext),
+                new VibrateUtilsModule(reactContext),
+                new VolumeUtilsModule(reactContext),
+                new FlashlightUtilsModule(reactContext),
+                new BrightnessUtilsModule(reactContext),
+                new AppUtilsModule(reactContext)
+        ); // 返回一个NativeModule范型的数组就ok
     }
 
     public List<Class<? extends JavaScriptModule>> createJSModules() {

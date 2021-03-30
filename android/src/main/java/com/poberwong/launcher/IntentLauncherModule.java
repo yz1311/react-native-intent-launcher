@@ -3,16 +3,21 @@ package com.poberwong.launcher;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.ComponentName;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.blankj.utilcode.util.AppUtils;
 import com.facebook.react.bridge.*;
 
 import java.io.Console;
 import java.io.File;
 import java.util.Set;
 import java.util.Iterator;
+
+import androidx.core.content.FileProvider;
 
 /**
  * Created by poberwong on 16/6/30.
@@ -67,18 +72,42 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
             intent.setAction(params.getString(ATTR_ACTION));
         }
         //must use setDataAndType
-        if(params.hasKey(ATTR_DATA)&&params.hasKey(ATTR_TYPE))
-        {
-            intent.setDataAndType(Uri.parse(params.getString(ATTR_DATA)),params.getString(ATTR_TYPE));
+        Uri contentUri = null;
+        if (params.hasKey(ATTR_DATA)) {
+            String path = params.getString(ATTR_DATA);
+            if(path.startsWith("content://")) {
+                contentUri = Uri.parse(path);
+            } else {
+                //判断是否为文件
+                boolean isFile = false;
+                try {
+                    File newFile = new File(path);
+                    isFile = newFile.exists();
+                    if(isFile) {
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            final String packageName = getCurrentActivity().getPackageName();
+                            final String authority = new StringBuilder(packageName).append(".intent_provider").toString();
+                            contentUri = FileProvider.getUriForFile(getCurrentActivity(), authority, newFile);
+                        } else {
+                            contentUri = Uri.fromFile(newFile);
+                        }
+                    } else {
+                        contentUri = Uri.parse(path);
+                    }
+                } catch (Exception e) {
+
+                }
+            }
         }
-        else
-        {
+        if(contentUri!=null && params.hasKey(ATTR_TYPE)) {
+            intent.setDataAndType(contentUri, params.getString(ATTR_TYPE));
+        } else {
             //just set data or type,another will be set to null
+            if(contentUri!=null) {
+                intent.setData(contentUri);
+            }
             if (params.hasKey(ATTR_TYPE)) {
                 intent.setType(params.getString(ATTR_TYPE));
-            }
-            if (params.hasKey(ATTR_DATA)) {
-                intent.setData(Uri.parse(params.getString(ATTR_DATA)));
             }
         }
         if (params.hasKey(TAG_EXTRA)) {
