@@ -41,3 +41,6 @@ android/app/libs
 android/.settings
 android/.project
 android/keystores/debug.keystore
+
+/src/*.js
+/src/*.js.map

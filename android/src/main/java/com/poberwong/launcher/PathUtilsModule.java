@@ -225,6 +225,11 @@ public class PathUtilsModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void getFilesPathExternalFirst(final Promise promise) {
+        promise.resolve(PathUtils.getFilesPathExternalFirst());
+    }
+
+    @ReactMethod
     public void getCachePathExternalFirst(final Promise promise) {
         promise.resolve(PathUtils.getCachePathExternalFirst());
     }

@@ -1,2 +1,4 @@
 Example/
 android/build/
+
+/src/*.js.map
