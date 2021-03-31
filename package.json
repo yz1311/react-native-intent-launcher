@@ -1,6 +1,6 @@
 {
   "name": "@yz1311/react-native-intent-launcher",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "call native function about intent in react-native android",
   "main": "index.js",
   "types": "./types/index.d.ts",

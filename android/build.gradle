@@ -19,4 +19,5 @@ android {
 dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.facebook.react:react-native:+"  // From node_modules
+    implementation 'com.blankj:utilcodex:1.30.6'
 }
