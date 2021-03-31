@@ -36,6 +36,7 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
     private static final String ATTR_DATA = "data";
     private static final String ATTR_FLAGS = "flags";
     private static final String ATTR_PACKAGE_NAME = "packageName";
+    private static final String ATTR_CLASS_PACKAGE_NAME = "classPackageName";
     private static final String ATTR_CLASS_NAME = "className";
     Promise promise;
     boolean hasError = false;
@@ -51,6 +52,8 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
     public String getName() {
         return "IntentLauncher";
     }
+
+
 
     /**
      * 选用方案
@@ -162,8 +165,8 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
 
         if (params.hasKey(ATTR_CLASS_NAME)) {
             ComponentName cn;
-            if (params.hasKey(ATTR_PACKAGE_NAME)) {
-                cn = new ComponentName(params.getString(ATTR_PACKAGE_NAME), params.getString(ATTR_CLASS_NAME));
+            if (params.hasKey(ATTR_CLASS_PACKAGE_NAME)) {
+                cn = new ComponentName(params.getString(ATTR_CLASS_PACKAGE_NAME), params.getString(ATTR_CLASS_NAME));
             } else {
                 cn = new ComponentName(context, params.getString(ATTR_CLASS_NAME));
             }
@@ -171,6 +174,9 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
         }
         if (params.hasKey(ATTR_ACTION)) {
             intent.setAction(params.getString(ATTR_ACTION));
+        }
+        if (params.hasKey(ATTR_PACKAGE_NAME)) {
+            intent.setPackage(params.getString(ATTR_PACKAGE_NAME));
         }
         //must use setDataAndType
         Uri contentUri = null;

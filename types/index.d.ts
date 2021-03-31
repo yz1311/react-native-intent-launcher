@@ -11,6 +11,8 @@ import ShellUtils from '../src/ShellUtils';
 import VibrateUtils from '../src/VibrateUtils';
 import VolumeUtils from '../src/VolumeUtils';
 import ZipUtils from '../src/ZipUtils';
+import AppStoreUtils from '../src/AppStoreUtils';
+import IntentLauncherUtils from '../src/IntentLauncherUtils';
 
 export type IntentConstant =  {
   ATTR_ACTION: string,
@@ -291,15 +293,10 @@ export type intent = {
   type?:string,
   extra?:string,
   packageName?:string,
+  classPackageName?:string,
   className?:string
 }
 
-declare const _default: {
-  startActivity: (args:intent)=>void,
-  finish: (resultCode:number, action: string, bundle: Record<string, any>) => void;
-  isIntentAvailable: (args:intent) => Promise<boolean>;
-  getAvailableResolveInfos: (args:intent) => Promise<Array<resolveInfo>>;
-}
 
 export const IntentConstant: IntentConstant;
 
@@ -317,6 +314,8 @@ export {
   VibrateUtils,
   VolumeUtils,
   ZipUtils,
+  AppStoreUtils,
+  IntentLauncherUtils
 }
 
-export default _default;
+export default IntentLauncherUtils;
