@@ -1,19 +1,24 @@
 package com.poberwong.launcher;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ComponentName;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.IntentUtils;
+import com.blankj.utilcode.util.Utils;
 import com.facebook.react.bridge.*;
 
 import java.io.Console;
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 import java.util.Iterator;
 
@@ -57,68 +62,7 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
         this.promise = promise;
         this.errorMessage = "";
         this.hasError = false;
-        Intent intent = new Intent();
-
-        if (params.hasKey(ATTR_CLASS_NAME)) {
-            ComponentName cn;
-            if (params.hasKey(ATTR_PACKAGE_NAME)) {
-                cn = new ComponentName(params.getString(ATTR_PACKAGE_NAME), params.getString(ATTR_CLASS_NAME));
-            } else {
-                cn = new ComponentName(getReactApplicationContext(), params.getString(ATTR_CLASS_NAME));
-            }
-            intent.setComponent(cn);
-        }
-        if (params.hasKey(ATTR_ACTION)) {
-            intent.setAction(params.getString(ATTR_ACTION));
-        }
-        //must use setDataAndType
-        Uri contentUri = null;
-        if (params.hasKey(ATTR_DATA)) {
-            String path = params.getString(ATTR_DATA);
-            if(path.startsWith("content://")) {
-                contentUri = Uri.parse(path);
-            } else {
-                //判断是否为文件
-                boolean isFile = false;
-                try {
-                    File newFile = new File(path);
-                    isFile = newFile.exists();
-                    if(isFile) {
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            final String packageName = getCurrentActivity().getPackageName();
-                            final String authority = new StringBuilder(packageName).append(".intent_provider").toString();
-                            contentUri = FileProvider.getUriForFile(getCurrentActivity(), authority, newFile);
-                        } else {
-                            contentUri = Uri.fromFile(newFile);
-                        }
-                    } else {
-                        contentUri = Uri.parse(path);
-                    }
-                } catch (Exception e) {
-
-                }
-            }
-        }
-        if(contentUri!=null && params.hasKey(ATTR_TYPE)) {
-            intent.setDataAndType(contentUri, params.getString(ATTR_TYPE));
-        } else {
-            //just set data or type,another will be set to null
-            if(contentUri!=null) {
-                intent.setData(contentUri);
-            }
-            if (params.hasKey(ATTR_TYPE)) {
-                intent.setType(params.getString(ATTR_TYPE));
-            }
-        }
-        if (params.hasKey(TAG_EXTRA)) {
-            intent.putExtras(Arguments.toBundle(params.getMap(TAG_EXTRA)));
-        }
-        if (params.hasKey(ATTR_FLAGS)) {
-            intent.addFlags(params.getInt(ATTR_FLAGS));
-        }
-        if (params.hasKey(ATTR_CATEGORY)) {
-            intent.addCategory(params.getString(ATTR_CATEGORY));
-        }
+        Intent intent = mapToIntent(params, getReactApplicationContext());
         try
         {
             getReactApplicationContext().startActivityForResult(intent, REQUEST_CODE, null); // 暂时使用当前应用的任务栈
@@ -130,6 +74,44 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
             this.errorMessage = e.getMessage();
 //            this.promise.reject("-1", e.getMessage());
         }
+    }
+
+    @ReactMethod
+    public void isIntentAvailable(ReadableMap params, final Promise promise) {
+        promise.resolve(IntentUtils.isIntentAvailable(mapToIntent(params, getReactApplicationContext())));
+    }
+
+    @ReactMethod
+    public void getAvailableResolveInfos(ReadableMap params, final Promise promise) {
+        List<ResolveInfo> list = Utils.getApp().getPackageManager()
+                .queryIntentActivities(mapToIntent(params, getReactApplicationContext()), PackageManager.MATCH_DEFAULT_ONLY);
+        WritableArray array = Arguments.createArray();
+        for (ResolveInfo info:list) {
+            WritableMap map = Arguments.createMap();
+            map.putInt("icon", info.icon);
+            map.putBoolean("isDefault", info.isDefault);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                map.putBoolean("isInstantAppAvailable", info.isInstantAppAvailable);
+            }
+            map.putInt("labelRes", info.labelRes);
+            map.putInt("match", info.match);
+            map.putInt("preferredOrder", info.preferredOrder);
+            map.putInt("priority", info.priority);
+            map.putString("resolvePackageName", info.resolvePackageName);
+            WritableMap activityMap = Arguments.createMap();
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+                activityMap.putInt("banner", info.activityInfo.banner);
+            }
+            activityMap.putInt("icon", info.activityInfo.icon);
+            activityMap.putInt("labelRes", info.activityInfo.labelRes);
+            activityMap.putInt("logo", info.activityInfo.logo);
+            activityMap.putString("name", info.activityInfo.name);
+            activityMap.putString("packageName", info.activityInfo.packageName);
+            activityMap.putMap("metaData", Arguments.fromBundle(info.activityInfo.metaData));
+            map.putMap("activityInfo", activityMap);
+            array.pushMap(map);
+        }
+        promise.resolve(array);
     }
 
     @Override
@@ -173,4 +155,71 @@ public class IntentLauncherModule extends ReactContextBaseJavaModule implements 
           activity.setResult(result, intent);
           activity.finish();
       }
+
+
+    public static Intent mapToIntent(ReadableMap params, ReactApplicationContext context) {
+        Intent intent = new Intent();
+
+        if (params.hasKey(ATTR_CLASS_NAME)) {
+            ComponentName cn;
+            if (params.hasKey(ATTR_PACKAGE_NAME)) {
+                cn = new ComponentName(params.getString(ATTR_PACKAGE_NAME), params.getString(ATTR_CLASS_NAME));
+            } else {
+                cn = new ComponentName(context, params.getString(ATTR_CLASS_NAME));
+            }
+            intent.setComponent(cn);
+        }
+        if (params.hasKey(ATTR_ACTION)) {
+            intent.setAction(params.getString(ATTR_ACTION));
+        }
+        //must use setDataAndType
+        Uri contentUri = null;
+        if (params.hasKey(ATTR_DATA)) {
+            String path = params.getString(ATTR_DATA);
+            if(path.startsWith("content://")) {
+                contentUri = Uri.parse(path);
+            } else {
+                //判断是否为文件
+                boolean isFile = false;
+                try {
+                    File newFile = new File(path);
+                    isFile = newFile.exists();
+                    if(isFile) {
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            final String packageName = context.getCurrentActivity().getPackageName();
+                            final String authority = new StringBuilder(packageName).append(".intent_provider").toString();
+                            contentUri = FileProvider.getUriForFile(context.getCurrentActivity(), authority, newFile);
+                        } else {
+                            contentUri = Uri.fromFile(newFile);
+                        }
+                    } else {
+                        contentUri = Uri.parse(path);
+                    }
+                } catch (Exception e) {
+
+                }
+            }
+        }
+        if(contentUri!=null && params.hasKey(ATTR_TYPE)) {
+            intent.setDataAndType(contentUri, params.getString(ATTR_TYPE));
+        } else {
+            //just set data or type,another will be set to null
+            if(contentUri!=null) {
+                intent.setData(contentUri);
+            }
+            if (params.hasKey(ATTR_TYPE)) {
+                intent.setType(params.getString(ATTR_TYPE));
+            }
+        }
+        if (params.hasKey(TAG_EXTRA)) {
+            intent.putExtras(Arguments.toBundle(params.getMap(TAG_EXTRA)));
+        }
+        if (params.hasKey(ATTR_FLAGS)) {
+            intent.addFlags(params.getInt(ATTR_FLAGS));
+        }
+        if (params.hasKey(ATTR_CATEGORY)) {
+            intent.addCategory(params.getString(ATTR_CATEGORY));
+        }
+        return intent;
+    }
 }

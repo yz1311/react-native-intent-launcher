@@ -263,10 +263,42 @@ export type appInfo = {
   isSystem: number;
 }
 
+export type resolveInfo = {
+  icon: number;
+  isDefault: boolean;
+  isInstantAppAvailable: boolean;
+  labelRes: number;
+  match: number;
+  preferredOrder: number;
+  priority: number;
+  resolvePackageName: string;
+  activityInfo: {
+    banner: number;
+    icon: number;
+    labelRes: number;
+    logo: number;
+    name: string;
+    packageName: string;
+    metaData: Record<string, any>;
+  }
+}
+
+export type intent = {
+  action: string,
+  category: string,
+  flags?:number,
+  data:string,
+  type?:string,
+  extra?:string,
+  packageName?:string,
+  className?:string
+}
+
 declare const _default: {
-  startActivity: (args:{action: string,category: string,flags?:number,data:string,type?:string,
-    extra?:string,packageName?:string,className?:string})=>void,
-  finish: (resultCode:number, action: string, map: Object) => void
+  startActivity: (args:intent)=>void,
+  finish: (resultCode:number, action: string, bundle: Record<string, any>) => void;
+  isIntentAvailable: (args:intent) => Promise<boolean>;
+  getAvailableResolveInfos: (args:intent) => Promise<Array<resolveInfo>>;
 }
 
 export const IntentConstant: IntentConstant;
