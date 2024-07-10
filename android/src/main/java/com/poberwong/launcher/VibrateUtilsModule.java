@@ -46,9 +46,9 @@ public class VibrateUtilsModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void vibrate(long milliseconds) {
+    public void vibrate(double milliseconds) {
         try {
-            VibrateUtils.vibrate(milliseconds);
+            VibrateUtils.vibrate((long) milliseconds);
         } catch (Exception e) {
 
         }
